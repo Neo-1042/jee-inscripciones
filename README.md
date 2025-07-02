@@ -1,4 +1,4 @@
-# Welcome to my 'jee-inscripciones' Java EE 7 repo!
+# Welcome to my 'jee-inscripciones' Java EE 7 project!
 ## 2025/06/24
 ### RRHG
 
