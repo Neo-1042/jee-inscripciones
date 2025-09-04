@@ -41,7 +41,7 @@ a disposición de los componentes. El programador puede acceder
 a esos componentes por medio de la JNDI API. 
 Asimismo, podemos tener acceso a estos recursos a través de
 la inyección de dependencias que implementa CDI mediante
-el uso de _annotations_ como ```@Resource```
+el uso de _annotations_ como ```@Resource```.
 
 
 ## CAP 4: CAPA DEL NEGOCIO. Enterprise JavaBeans (EJB)
@@ -59,12 +59,13 @@ EJB 3.2
 
 ### POJO = Plain Old Java Object
 
-Los viejos EJB (versión 2.1 y anteriores) se componían de 2 
+Los **viejos EJB (versión 2.1 y anteriores)** se componían de 2 
 interfaces: _interface home_ e _interface remote_. Estas
 interfaces definían los métodos de **instanciación** y los
 métodos de **negocio** del componente. 
 Entonces, el EJB consistía de una clase que debía implementar
 estas interfaces; y todo esto debería escribirse en un archivo
+
 ```ejb-jar.xml```
 
 Además, la "implementación" de las interfaces _home_ y 
@@ -85,15 +86,69 @@ aplicaciones:
 - Distribuibles
 - Seguras
 
+### Aplicación _Enterprise_ vs Aplicación _Web_
+
+**Enterprise App** => La app utiliza **EJB** en la capa de negocio
+y **JPA** en la capa de persistencia, independientemente 
+de la tecnología que use en el front-end.
+
+**Web App** => El backend **NO UTILIZA EJB**. El front-end
+puede usar servlets, JSPs (que son en realidad servlets),
+JSF, etc.
+
 ### Tipos de EJB
 
-1. Session beans (stateful and stateless)
-2. Entity beans (obsoletos, sustituidos por **JPA**)
-3. Message-driven beans (**_Java Message Service_**)
+1. **Session beans** (stateful and stateless. Usualmente 
+nos referimos a ellos cuando se habla de los Beans)
+2. **Entity beans** (obsoletos, sustituidos por **JPA**)
+3. **Message-driven beans** (**_Java Message Service_**)
 
 ## CAP 5: CAPA DE DATOS. JPA = Java Persistence API 
 
 Creando la estructrura de carpetas del proyecto:
 
 /Projects/jee-inscripciones/src/main/java/com/rafa/...
-    /{dao, datasource, dto, modelo, seguridad, service, servlets}
+    /{dao, datasource, dto, modelo, seguridad, service, servlets, common}
+
+### DAO = Data Access Object
+
+Clases que deben ser implementadas con **Session Beans**
+y sus métodos deben resolverse usando **JPA**.
+Los DAO se invocarán desde la capa del "FACADE".
+
+Recordatorio:
+
+User <-> View <-> Controller <-> Facade <-> DAO <-> DB
+
+## CAP 6: Poniendo Todo Junto. JEE APP de Inscripciones
+
+La aplicación que generaré tendrá la siguiente configuración:
+
+- Front end web con estructura MVC
+- Única página JSP para implementar todas las vistas
+- Servlets (controllers) para controlar el proceso web e
+invocar al FACADE
+- FACADE implementado como un Session Bean, cuyos métodos
+transaccionales invocarán a los DAO.
+- DAOs implementados también como Session Beans, cuyos
+métodos usarán JPA para resolver los accesos a las tablas
+de la base de datos.
+
+### Etapas: Análisis y Desarrollo
+
+Dentro de cada etapa se trabajarán sobre las 4 capas del
+**modelo _n-tier_** (próximamente).
+
+### Análisis
+
+Alcance y casos de uso > View > Model (lógica de negocio) 
+    > Modelo de Datos
+
+*Sin análisis del modelo de objetos de dominio (_mappings, ORM_) ni tampoco los DAO
+
+### Desarrollo
+
+Modelo de Datos (con _mappings_) > DAO > Facade
+    Controller > Presentación (View)
+
+END_OF_FILE
