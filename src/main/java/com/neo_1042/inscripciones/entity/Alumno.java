@@ -54,4 +54,13 @@ public class Alumno {
         this.cursos = cursos;
     }
 
+    @Override
+    public String toString() {
+        return "Alumno [idAlumno=" + idAlumno + ", nombre=" + nombre + ", telefono=" + telefono + ", cursos=" + cursos
+                + "]";
+    }
+
+    
+    
+
 }
