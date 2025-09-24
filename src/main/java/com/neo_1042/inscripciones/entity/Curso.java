@@ -19,7 +19,72 @@ public class Curso {
 	@Column(name="precio")
 	private double precio;
 
-	// To do: @ManyToMany from TBL_CURSO_FORMA_PAGO
+	@ManyToMany
+	@JoinTable(
+		name="TBL_CURSO_FORMA_PAGO"
+		,joinColumns={@JoinColumn(name="id_curso")}
+		,inverseJoinColumns={@JoinColumn(name="id_forma_pago")}
+	)
+	private List<FormaPago> formasPago;
+
+	@ManyToMany
+	@JoinTable(
+		name="INSCRIPCION"
+		,joinColumns={@JoinColumn(name="id_curso")}
+		,inverseJoinColumns={@JoinColumn(name="id_alumno")}
+	)
+	private List<Curso> alumnos;
+
+	public int getIdCurso() {
+		return idCurso;
+	}
+
+	public void setIdCurso(int idCurso) {
+		this.idCurso = idCurso;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public int getDuracion() {
+		return duracion;
+	}
+
+	public void setDuracion(int duracion) {
+		this.duracion = duracion;
+	}
+
+	public double getPrecio() {
+		return precio;
+	}
+
+	public void setPrecio(double precio) {
+		this.precio = precio;
+	}
+
+	public List<FormaPago> getFormasPago() {
+		return formasPago;
+	}
+
+	public void setFormasPago(List<FormaPago> formasPago) {
+		this.formasPago = formasPago;
+	}
+
+	public List<Curso> getAlumnos() {
+		return alumnos;
+	}
+
+	public void setAlumnos(List<Curso> alumnos) {
+		this.alumnos = alumnos;
+	}
+
+	
+
 
 }
 
