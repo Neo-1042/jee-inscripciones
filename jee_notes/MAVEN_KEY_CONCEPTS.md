@@ -33,3 +33,43 @@ files from the **mvn repository**, including transitive
 dependencies.
 
 Local Maven Repository (.m2 hidden directory)
+
+## Tool Installation
+
+1. git installation
+2. JDK installation
+
+File: ~/.bashrc
+```bash
+export JAVA_HOME=`/usr/libexec/java_home`
+```
+
+## Maven installation on MacOS X
+
+http://maven.apache.org
+
+- Extract **Binary Tarball** (tar.gz) archive on
+/Development (for example)
+
+```bash
+cd /
+mkdir Development
+cd Development
+tar -xvzf apache-maven-download.tar.gz
+```
+
+Create a symbolic link to the Maven directory:
+```bash
+ln -s apache-maven-folder maven
+```
+
+Create MAVEN_HOME environment variable:
+```bash
+export MAVEN_HOME=/Development/maven
+export PATH="${PATH}:${MAVEN_HOME}/bin"
+```
+
+Verify Maven is installed:
+```bash
+mvn -version
+```
