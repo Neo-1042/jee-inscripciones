@@ -73,3 +73,13 @@ Verify Maven is installed:
 ```bash
 mvn -version
 ```
+
+The Maven instructor Jason Taylor likes to include the source
+of **.bashrc** inside the **.bash_profile** file.
+
+File: ~/.bash_profile
+```bash
+    if [ -f ~/.bashrc ] ; then
+        source ~/.bashrc
+    fi
+```
