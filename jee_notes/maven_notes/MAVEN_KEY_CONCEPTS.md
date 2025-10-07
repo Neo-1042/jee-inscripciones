@@ -83,3 +83,53 @@ File: ~/.bash_profile
         source ~/.bashrc
     fi
 ```
+
+### Bonus Notes: Windows, git bash, Notepad++
+
+- Append ```C:\Program Files\Notepad++ ;``` to the ```PATH```
+environment variable, separating paths with a semi-colon (;)
+
+- Create alias for Notepad++ with git bash:
+```bash
+notepad++ ~/.bash_profile
+# Add the following new line to .bash_profile
+alias npp='notepad++ -multilnst -nosession'
+```
+\* Older versions of Git ( < 2.0) use the ```.bashrc``` file
+instead.
+
+- Make Notepad++ the default editor in git:
+```bash
+git config --global core.editor "notepad++ -multiInst -nosession"
+# Test this:
+git config --global -e
+```
+
+### JDK installation validation on Windows
+
+1. Set environment variable ```JAVA_HOME``` to 
+
+```C:\Program Files\Java\jdk1.8.0_102```
+
+2. Append ```;%JAVA_HOME%\bin``` to the ```PATH```variable.
+
+This allows any of the Java tools to be accessible from anywhere
+in the Windows system.
+
+### Maven Manual Installation on Windows
+
+1. Download the binary *.zip file from <https://maven.apache.org/install.html>
+
+2. Extract the file into ```C:\DevTools\``` 
+
+3. Control Panel > Advanced System Settings > 
+Environment Variables > New System Variable
+
+Variable name = ```M2_HOME``` 
+(named like this for historical reasons)
+
+Variable Value = ```C:\DevTools\apache-maven-3.3.9 ```
+
+4. Append ```;%M2_HOME%\bin``` to the ```PATH```variable.
+
+EOF
