@@ -118,7 +118,9 @@ public class TestDataSource extends HttpServlet {
 ## Cliente Web de un EJB
 
 El siguiente servlet utiliza CDI para obtener una instancia
-del EJB 'CalculadoraBean', luego invoca el método ```sumar()```
+del EJB 'CalculadoraBean', luego invoca el método 
+```sumar()``` pasándole los parámetros a, b que espera
+recibir del "request".
 
 ```java
 @WebServlet("/testEJB")
@@ -131,7 +133,172 @@ public class TestEJB extends HttpServlet {
         HttpServletRequest request
         ,HttpServletResponse response
     ) throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
+        PrintWriter pw = response.getWriter();
+        pw.print("<html><body>");
+
+        // Obtener valores del request
+        int a = Integer.parseInt(request.getParameter("a"));
+        int b = Integer.parseInt(request.getParameter("b"));
+
+        // Invocar al método del EJB
+        out.print(ejb.sumar(a, b));
+
+        out.print("</body></html>");
+    }
+}
+```
+
+## Remote or Business Interface
+
+Para que el EJB pueda ser accedido desde un proceso
+remoto (que se ejecuta en otra máquina virtual), su clase
+debe implementar la interface _remote_, también llamada
+**business interface**.
+
+La business interface describe los métodos o lógica de
+negocio del componente EJB. En su encabezado, debe
+incorporar la anotación @Remote:
+
+```java
+@Remote
+public interface Calculadora {
+
+    public double sumar(double a, double b);
+}
+```
+
+Habiendo definido la _remote interface_, el siguiente paso es
+programar su implementación con un EJB, ya sea _stateless_ o
+_stateful_. 
+
+```java
+@Stateless
+public class CalculadoraBean implements Calculadora {
+
+    @Override
+    public double sumar(double a, double b) {
+        return a+b;
+    }
+}
+```
+
+## Cliente _standalone_ de un EJB
+
+Para acceder a un EJB desde un programa Java _standalone_,
+debemos buscarlo a través de un "lookup" JNDI 
+(Java Naming and Directory Interface).
+
+```java
+public class StandaloneComponent {
+
+    public static void main(String[] args) {
+        // La conexión JNDI debe especificarse en el archivo
+        // jndi.properties
+        Context ctx = new InitialContext();
+
+        // Este nombre deberá ser validado con el proveedor
+        // del contenedor EJB (TomEE, JBoss, TomCat, Jetty)
+        String jndiName = "CalculadoraBeanRemote";
+        Calculadora ejb = (Calculadora) ctx.lookup(jndiName);
+
+        // Obtener los parámetros de consola
+        int a = Integer.parseInt(args[0]);
+        int b = Integer.parseInt(args[1]);
+
+        // Mostrar el resultado
+        System.out.println("Resultado: " ejb.sumar(a,b));
+
+    }
+}
+```
+
+## _Stateful_ vs _stateless_
+
+La diferencia entre un EJB stateless y uno stateful es la
+posibilidad de mantener un vínculo conversacional con el
+cliente. De algún modo, podemos plantear una analogía
+entre los EJB y los POJOs:
+
+**stateless** ---> Clase utilitaria con miembros estáticos
+
+**stateful**  ---> Clase con métodos y variables de instancia
+
+### Ejemplo de CalculadoraMemBean como _stateful_ bean
+
+File: Calculadora.java (interface)
+```java
+@Remote
+public interface CalculadoraMem {
+
+    void add(double a);
+
+    void resetMem();
+
+    double getMem();
+}
+```
+
+EJB stateful de implementación:
+
+```java
+@Stateful
+public class CalculadoraMemBean implements CalculadoraMem {
+
+    // Memoria de la calculadora. Variable privada
+    private double mem = 0;
+
+    // Suma un valor a la memoria
+    public void add(double a) {
+        mem = mem + a;
+    }
+
+    // Reset memoria
+    @Override
+    public void resetMem() {
+        mem = 0;
+    }
+
+    // Get memoria
+    public double getMem() {
+        return this.mem;
+    }
+}
+```
+
+```java
+public class TestMem {
+
+    public static void main(String[] args) throws Exception
+    {
+        Context ctx = new InitialContext();
+
+        String jndiName = "CalculadoraMemRemote";
+
+        Calculadora ejb = (Calculadora)ctx.lookup(jndiName);
+
+        Scanner scanner = new Scanner(System.in);
+
+        // Ingresar valor
+        String s = leerValorConsola(scanner);
+
+        // Mientras no se escriba "FIN" por consola,
+        // Sumar el valor. Al final, imprimir el resultado
+        while( !s.equals ("FIN")) {
+            double v = Double.parseDouble(s);
+
+            ejb.add(v);
+
+            s = leerValorConsola(scanner);
+        }
+
+        System.out.println("Resultado = " + ejb.getMem());
+    }
+
+    private static String leerValorConsola(Scanner scanner) {
+        String m = "Ingrese valor \"FIN\" para finalizar:";
+        System.out.print(m);
+        
+        return scanner.next();
     }
 }
 ```
