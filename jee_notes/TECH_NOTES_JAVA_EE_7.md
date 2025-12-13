@@ -44,7 +44,7 @@ la inyección de dependencias que implementa CDI mediante
 el uso de _annotations_ como ```@Resource```.
 
 
-## CAP 4: CAPA DEL NEGOCIO. Enterprise JavaBeans (EJB)
+## CAP 4: CAPA DEL NEGOCIO. Enterprise Java Beans (EJB)
 
 ### Enterprise JavaBeans (Session Beans)
 
