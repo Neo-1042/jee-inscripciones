@@ -302,3 +302,63 @@ public class TestMem {
     }
 }
 ```
+
+## Performance (_Stateless_ es más recomendable)
+
+Los EJB stateful son más costosos en términos de
+procesamiento y uso de memoria, ya que el container debe
+mantener tantas instancias activas del bean como clientes
+concurrentes lo estén requiriendo.
+
+Sin embargo, con un pequeño pool de instancias de EJBs
+_stateless_ se puede reducir el _overhead_.
+
+### Singleton (stateless EJB)
+
+A partir de la especificación EJB 3.1 aparecen los 
+_singleton_ como caso particular de los _stateless_,
+cuya característica es que no serán _pooleados_;
+el container no podrá tener más de una instancia activa
+del _singleton_: esta instancia será responsable de atender
+todos los clientes que demanden al EJB.
+
+## Ciclo de Vida de un EJB
+
+A grandes rasgos, un EJB se crea y se destruye. Además,
+el EJB container puede evaluar el "poner en pausa"
+("passivar") a un
+EJB stateful para ahorrar recursos (i.e. serializar
+y guardar en disco).
+
+### Callback Methods
+
+Para saber cada vez que un EJB cambia
+de estado, se dispone de un conjunto de
+__annotations__ con las que se pueden definir
+**callback methods**:
+
+1. ```@PostConstruct``` -> Se ejecuta inmediatamente
+después de que el EJB se haya instanciado
+
+2. ```@PreDestroy``` -> Se ejecuta justo antes de que
+el EJB se destruya
+
+3. ```@PrePassivate``` -> Sólo para **EJB stateful**. 
+Se ejecuta
+justo antes de que se serialice y guarde en disco.
+
+4. ```@PostActivate``` -> Sólo para **EJB stateful**.
+Se invoca justo después de que el EJB haya sido restaurado.
+
+### Ciclo de Vida de un EJB stateful
+
+1. Create
+2. Dependency Injection (if any)
+3. PostConstruct callback (if any)
+4. init method or \<ejbCreate<METHOD\> (if any)
+
+(Fuente: [https://docs.oracle.com/javaee/6/tutorial/doc/giplj.html](https://docs.oracle.com/javaee/6/tutorial/doc/giplj.html)
+¿Por qué se reinician los 
+números y se invierten las operaciones?)
+1. Remove
+2. PreDestroy callback (if any)
