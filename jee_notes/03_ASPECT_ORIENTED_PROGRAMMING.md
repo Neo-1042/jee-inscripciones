@@ -5,7 +5,7 @@ Se le llama _Aspect Oriented Programming_ a la técnica en la
 intervenir en la llamada a un método con el fin de modificar
 los valores de los parámetros o manipular su valor de retorno.
 
-Ejemplo: @Interceptors
+Ejemplo: ```@Interceptors```
 
 ```java
 public interface HolaMundo {
@@ -37,9 +37,9 @@ public class HolaMundoInterceptor {
     public Object interceptaSaludar(InvocationContext ic)
         throws Exception {
             // Obtener los parámetros del método que será interceptado
-            Object parametros[] = ic.getParameters();
+            Object[] parametros = ic.getParameters();
 
-            // Se toma el primer elemento
+            // Se toma el primer elemento (único en este caso)
             String nombre = (String) parametros[0];
 
             // Manipular el parámetro interceptado
@@ -52,7 +52,26 @@ public class HolaMundoInterceptor {
             String valorDeRetorno = (String)ic.proceed();
 
             // Se retorna el valor modificado:
+            return valorDeRetorno + " (metodo interceptado)";
             
         }
+}
+```
+Con el método ```interceptaSaludar(InvocationContext ic)```
+anotado con @AroundInvoke se intervienen las llamadas a
+```saludar(String nombre)``` y se modifica el valor del
+parámetro y su valor de retorno.
+
+```java
+public class TestHolaMundo {
+
+    public static void main(String[] args) throws Exception {
+        Context ctx = new InitialContext();
+
+        String jndiName = "HolaMundoBeanRemote";
+        HolaMundo ejb = (HolaMundo) ctx.lookup(jndiName);
+
+        System.out.println(ejb.saludar("Rodrigo"));
+    }
 }
 ```
