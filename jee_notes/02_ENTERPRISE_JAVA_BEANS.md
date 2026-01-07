@@ -362,3 +362,53 @@ Se invoca justo después de que el EJB haya sido restaurado.
 números y se invierten las operaciones?)
 1. Remove
 2. PreDestroy callback (if any)
+
+# Timers
+
+A partir de JEE 6 podemos utilizar timers para procesar
+eventos que han sido planificados con anterioridad.
+Estos eventos pueden ser esporádicos o periódicos.
+
+En el siguiente EJB el método ```procesaTimeout()```
+se ejecutará después de que expire un tiempo que será
+establecido por el cliente a través del método
+```setTimeout()```. Por otro lado, el método
+```planificado()``` se ejecutará cada 5 segundos.
+
+Interfaz remote o business:
+```java
+@Remote
+public interface DemoTimer {
+    public void setTimeout(long t);
+}
+```
+Notemos que la interface remote expone un único método:
+```setTimeout()```, los otros métodos del EJB no están
+expuestos porque no es el cliente quien los debe invocar.
+
+Implementación del stateless bean:
+```java
+@Stateless
+public class DemoTimerBean implements DemoTimer {
+
+    @Resource
+    private SessionContext context;
+
+    @Override
+    public void setTimeout(long t) {
+        TimerService timerService = context.getTimerService();
+        timerService.createTimer(t, " :O) " );
+    }
+
+    @Timeout
+    public void procesaTimeout(Timer t) {
+        System.out.println(t.getInfo());
+    }
+
+    @Schedule(second="*/5", minute = "*", hour = "*")
+    public void planificado() {
+        System.out.println("Hola, Mundo. Scheduled");
+    }
+    
+}
+```
