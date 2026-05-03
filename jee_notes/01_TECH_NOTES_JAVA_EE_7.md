@@ -149,7 +149,7 @@ Alcance y casos de uso > View > Model (lógica de negocio)
 ### Desarrollo
 
 Modelo de Datos (con _mappings_) > DAO > Facade
-    Controller > Presentación (View)
+    > Controller > Presentación (View)
 
 ## Capa de Datos
 

@@ -95,7 +95,7 @@ Es decir, un componente dentro de la misma máquina virtual.
 Acceso Remoto -> Acceder al EJB desde otra máquina virtual.
 Por ejemplo, desde un programa Java _standalone_.
 
-## Recordatorio: CDI = Context Dependency Injection
+## Recordatorio: CDI = Contexts and Dependency Injection
 
 CDI (a partir de JEE 6) consiste en un conjunto de annotations
 que simplifica el acceso a los recursos que se encuentran
