@@ -241,5 +241,34 @@ REFERENCES tbl_curso (id_curso)
 ;
 ```
 
+# Javax vs Jakarta
 
-END_OF_FILE
+In 2017, Oracle decided to donate JavaEE to the Eclipse
+Foundation. However, Oracle preserved the rights of the
+"Java" name. Thus, all packages had to be changed from
+javax.* ---> jakarta.*
+
+- `javax.persistence`: Used in Java EE 8 and older 
+(JPA version 2.2 and older).
+
+- `jakarta.persistence`: Used in Jakarta EE 9 and newer (JPA version 3.0 and newer).
+
+# Apache Tomcat Server using External *.war
+
+1. Download "apache-tomcat-9.0.37.tar.gz"
+2. Move your "my-app.war" -> ~/Desktop/springboot/TomcatServer/webapps/
+3. Start the Tomcat Server
+```bash
+cd ~/Desktop/springboot/TomcatServer/apache-tomcat-9.0.37/bin
+./startup.sh && tail -f ../logs/catalina.out
+```
+4. Kill the server with Ctrl + C.
+5. Verify that the port 8080 is free:
+```bash
+cd ~/Desktop/springboot/TomcatServer/apache-tomcat-9.0.37/bin
+lsof -i :8080 | grep LISTEN
+# Windows CMD:
+# netstat -ano | findstr :8080
+sudo kill -9 31357
+# taskkill /pid 31357
+```

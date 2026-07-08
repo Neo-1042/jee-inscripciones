@@ -183,3 +183,7 @@ The `filter()` method is normally used this way to reject
 wrapped values based on a predefined rule. We could use
 it to reject a **wrong email format** or a
 **password that is not strong enough**.
+
+# Buying a Modem Example
+
+PENDING
