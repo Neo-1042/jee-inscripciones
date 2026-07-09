@@ -242,7 +242,7 @@ Provide a static **factory method** that:
 3. Then, returns a reference to the newly created `MyThead` object.
 
 ```java
-class MyFactoryThread Implements Runnable {
+class MyThread Implements Runnable {
 
     // A reference to the thread is stored:
     Thread thread;
@@ -270,7 +270,46 @@ class MyFactoryThread Implements Runnable {
                 Thread.sleep(400);
                 System.out.println("In " + thread.getName() + ", count is " + count);
             }
+        } catch(InterruptedException exc) {
+            System.out.println(thread.getName() + " interrupted.");
         }
+
+        System.out.println(thread.getName() + " terminating.");
+    }
+}
+
+class ThreadVariations {
+    public static void main(String[] args) {
+
+        System.out.println("Main thread starting");
+
+        // Create and start a thread
+        MyThread mt = MyThread.createAndStart("Child #1");
+
+        for(int i=0; i < 50; i++) {
+            System.out.print(".");
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException exc) {
+                System.out.println("Main thread interrupted");
+            }
+        }
+        
+        System.out.println("Main thread ending");
     }
 }
 ```
+
+## Factory Methods 
+
+In general, a factory method is a method that returns an
+object of a class. Typically, factory methods are
+**static methods** of a class. Factory methods are useful in
+a variety of situations, enabling an object to be constructed
+and then set to some specific state prior to being returned
+to the caller.
+
+More examples would include easier ways to create specific
+kinds of objects, that is, `createRedLine()`,
+`createBlueLine()` instead of having these specifics as
+complex calls to constructors.
