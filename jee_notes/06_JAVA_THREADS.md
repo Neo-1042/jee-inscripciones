@@ -159,9 +159,7 @@ In essence, start() executes a call to run()
 ## Example. Creating a new thread and start running it
 
 ```java
-
 // Create a thread bt implementing Runnable:
-
 class MyThread implements Runnable {
     String thrdName;
 
@@ -169,7 +167,7 @@ class MyThread implements Runnable {
         this.thrdName = name;
     }
 
-    // Entry point of the Thread
+    // The run() method is the entry point of the Thread
     public void run() {
         System.out.println(thrdName + " starting ...");
 
@@ -191,8 +189,8 @@ class DemoThreads {
     public static void main(String[] args) {
         System.out.println("Main thread starting...");
 
-        // First, construct a "MyThread" object, which is
-        // a Runnable object
+        // First, construct a "MyThread" object, which is an object
+        // that implements the "Runnable" interface.
         MyThread mt = new MyThread("Child #1");
 
         // Next, construct a thread from that object.
@@ -213,15 +211,18 @@ class DemoThreads {
         System.out.println("Main thread ending");
     }
 }
-
-// This timing (math) ensures that main() finishes last.
-// However, there are better ways for one thread to
-// wait until another completes.
+/*
+The main thread and "mt" execute CONCURRENTLY. To make this evident, 
+the timing (math) used ensures that main() finishes last.
+However, there are better ways for one thread to
+wait until another completes.
+*/
+ 
 ```
 
 ```java
 // The sleep() method can throw an InterruptedException:
-static void sleep(long ms) throws InterruptedException {}
+static void sleep(long ms) throws InterruptedException;
 
 // Thus, its execution must be wrapped inside a try block.
 ```
@@ -229,3 +230,47 @@ static void sleep(long ms) throws InterruptedException {}
 As a general rule, a program continues to run until all
 of its threads have ended. Thus, having the main thread
 finish last is not a requirement, but a good practice.
+
+## Begin Execution as soon as the Thread is Created
+
+This approach is useful in cases in which there is no need to
+separate thread creation from thread execution.
+Provide a static **factory method** that:
+
+1. Creates a new `MyThread` instance.
+2. Calls `start()` on the thread associated with that instance.
+3. Then, returns a reference to the newly created `MyThead` object.
+
+```java
+class MyFactoryThread Implements Runnable {
+
+    // A reference to the thread is stored:
+    Thread thread;
+
+    // Construct the Thread giving it a name from the start:
+    MyThread(String name) {
+        thread = new Thread(this, name);
+    }
+
+    // A factory method that creates and starts a thread
+    public static MyThread createAndStart(String name) {
+        MyThread myThread = new MyThread(name);
+
+        myThread.thread.start();
+
+        return myThread;
+    }
+
+    // Entry point of "thread"
+    public void run() {
+        System.out.println(thread.getName() + " starting...");
+
+        try {
+            for(int count=0; count < 10; count++) {
+                Thread.sleep(400);
+                System.out.println("In " + thread.getName() + ", count is " + count);
+            }
+        }
+    }
+}
+```
