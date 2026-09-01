@@ -65,3 +65,84 @@ public class DemoOverriding {
     }
 }
 ```
+
+# Java's Collection Framework
+
+Here are some of the most useful items in Java's Collection
+Framework:
+
+### `ArrayList`
+
+An `ArrayList` is a dynamically resizing array, which grows
+as you insert elements.
+
+```java
+ArrayList<String> myArrL = new ArrayList<String>();
+myArrL.add("First");
+myArrL.add("Second");
+myArrL.add("Third");
+
+System.out.println(myArrL.get(0)); // Prints "First"
+```
+
+Both `ArrayList` and `Vector` implement the `List` interface.
+However, `ArrayList` is usually preferred because of its
+**faster performance**.
+
+### `Vector` (legacy code)
+
+A `Vector` is very similar to an `ArrayList`, except that
+its methods are **synchronized**.
+
+```java
+Vector<String> myVec = new Vector<String>();
+myVec.add("First");
+myVec.add("Second");
+myVec.add("Third");
+
+System.out.println(myVec.get(0)); // Prints "First"
+```
+
+`Vector` has the advantage that it is **thread-safe** because
+its methods are synchronized, meaning that Java ensures that
+**only one thread at a time can execute that method on a given
+object**.
+
+Think of synchronization as putting a **lock** on the object.
+If two threads try to add elements to an `ArrayList` (not
+thread-safe), they could interfere with each other while
+the `ArrayList` is resizing its internal array, potentially
+causing:
+
+- Lost data
+- Corrupted state
+- Unexpected exceptions
+
+However, for modern Java applications, if thread safety is
+needed, developers typically use:
+```java
+List<String> list = Collections.synchronizedList(new ArrayList<>());
+```
+
+### `LinkedList`
+
+```java
+LinkedList<String> myLL = new LinkedList<String>();
+
+myLL.add("two");
+// LinkedLists allow you to add elements to any position:
+myLL.addFirst("one");
+
+Iterator<String> iter = myLL.iterator();
+while(iter.hasNext()) {
+    System.out.println(iter.next());
+}
+```
+
+### `HashMap`
+
+```java
+HashMap<String, String> map = new HashMap<String, String>();
+map.put("one", "uno");
+map.put("two", "dos");
+```
