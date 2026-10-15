@@ -85,3 +85,37 @@ JasperReports uses a two-stage template pipeline:
     </detail>
 </jasperReport>
 ```
+
+## Tooling
+
+- JasperSoft Studio (Eclipse-based GUI)
+    - Saving a \*.jrxml file automatically compiles it into a \*.jasper file
+    - DB2 Adapter: Driver = `com.ibm.db2.jcc.DB2Driver` (requires `db2jcc4.jar`)
+    - Informix Adapter: Driver = `com.informix.jdbc.IfxDriver` (requires ifxjdbc.jar).
+
+## Deploying Modified Reports
+
+If the reports live outside the EAR/WAR installation on AIX, deploying new Jasper files does not require rebuilding or redeploying the WebSphere application unless report objects are cached permanently in JVM memory.
+
+## Step-By-Step Deployment
+
+1. **Compile locally** (jrxml --> jasper)
+2. **Upload to AIX**: Transfer both *.jrxml and *.jasper to:  
+    `/AppA/jasperReports/` using SCP or SFTP:
+
+```bash
+scp my_report.jrxml rrhg@aix-server:/AppA/reports/
+scp my_report.jasper rrhg@aix-server:/AppA/reports/
+```
+3. **Verify Permissions**: ensure the WebSphere process user (e.g. `wasadmin`) has read permissions on AIX:
+
+```bash
+chmod 644 /AppA/reports/my_report.jasper
+chown wasadmin:wasgroup /AppA/reports/my_report.jasper
+```
+
+4. **Manage Application Caching**
+    - If code loads from the file stream dynamically on each request: the updated report takes effect immediately, without an application restart needed.
+    - If code caches `JasperReport` instances in a Spring Singleton or Map: Restart the `AppA` enterprise application or server instance via the **WAS ND Administrative Console**:
+
+WAS Console: Applications > Application Types > WebSphere Enterprise Applications > AppA > Restart.
