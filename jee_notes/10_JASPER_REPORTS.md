@@ -119,3 +119,18 @@ chown wasadmin:wasgroup /AppA/reports/my_report.jasper
     - If code caches `JasperReport` instances in a Spring Singleton or Map: Restart the `AppA` enterprise application or server instance via the **WAS ND Administrative Console**:
 
 WAS Console: Applications > Application Types > WebSphere Enterprise Applications > AppA > Restart.
+
+# Monitoring Checklist
+
+1. Inspect WAS Log Output.
+2. `FileNotFoundException` Incorrect file system path reference
+in the Java code.
+3. `JRException: Class not found`: Version mismatch between local Jaspersoft Studio compiler and the `jasperreports.jar` inside the WAR/EAR library.
+4. `SQLException`/`Connection Timeout`: the AIX server lacking firewall network access to the external IBM Informix DB host/port.
+5. Version Mismatching (Library vs Jaspersoft Studio): check the exact version of `jasperreports-x.x.x.jar` inside `/AppA.war/WEB-INF/lib/`: if your WAR uses **JasperReports 6.18.0**, configure Jaspersoft Studio to compile with **Compatibility Mode = 6.18.0** (Window > Preferences > Jaspersoft Studio > Compatibility).
+6. **AIX Font Rendering Issues**: If a report uses `Arial` and exports to PDF on AIX, the text will align incorrectly or fail with missing font exceptions.  
+<u>Solution:</u> Package custom fonts as a **Jasper Font Extension JAR** and include inside `/AppA.war/WEB-INF/lib/`, or use standard logical fonts like SansSerif, Serif, Monospaced.
+
+7. **Dual Database Parameter Handling**: When queries span both local DB2 (for parameters) and external Informix (for core transactional data):
+    - Verify whether Spring JDBC passes pre-fetched DB2 parameters as a Java `Map<String, Objects>` into `JasperFillManager.fillReport(jasperReport, parametersMap, InformixConnection)`.
+    - Ensure parameter data types match across databases (e.g. DB2 `VARCHAR` vs Informix `CHAR` or handling date conversions explicitly in Java).
