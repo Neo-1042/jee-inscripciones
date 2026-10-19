@@ -134,3 +134,28 @@ in the Java code.
 7. **Dual Database Parameter Handling**: When queries span both local DB2 (for parameters) and external Informix (for core transactional data):
     - Verify whether Spring JDBC passes pre-fetched DB2 parameters as a Java `Map<String, Objects>` into `JasperFillManager.fillReport(jasperReport, parametersMap, InformixConnection)`.
     - Ensure parameter data types match across databases (e.g. DB2 `VARCHAR` vs Informix `CHAR` or handling date conversions explicitly in Java).
+
+# iReport vs Crystal Reports
+
+**\*Warning**: Crystal Reports is not compatible with our current structure, since it uses the **SAP Crystal Reports Engine** and produces a propietary binary file format (\*.rpt).
+
+Thus, you must go with **iReport** (legacy version of Jaspersoft Studio). iReport Designer was officially retired by Jaspersoft at version 5.6.0 back in 2014.
+
+## iReport requires Java 7 or 8
+
+iReport desktop UI is built on the old NetBeans RCP framework and will fail to open or immediately crash if executed with JDK 11, 17 or newer. Fix = Edit `<iReport-Install-Dir>/etc/ireport.conf` and explicitly point `jdkhome` to a local Java 8 installation:
+```properties
+jdkhome="/path/to/jdk1.8.0_361"
+```
+
+## Match the Compiled Version to your Application JAR
+
+If these versions don't match, WebSphere will throw runtime deserialization or `Unknown tag / attribute` exceptions when loading the report.
+
+1. Check the version of 
+```
+/.../AppA.war/WEB-INF/lib/jasperreports-x.x.x.jar
+```
+2. Set iReport / Jaspersoft Studio compatibility or source version in the settings: `Tools > Options > iReport > General > Compatibility` to match that version.
+
+<u>Question</u>: how must we configure our DB connections to Informix and DB2?
