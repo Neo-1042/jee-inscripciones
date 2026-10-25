@@ -42,3 +42,25 @@ When you are deploying a **standalone web application** or a **RESTful microserv
 
 ### Use an EAR
 When you have a **complex enterprise system** (such as a large banking application) that consists of **multiple frontends** (**multiple WARs**) sharing a **common backend business logic** tier (EJBs JARs). Packaging them in an EAR allows WAS to deploy them as a single unit, ensuring they share the **same classloader context**, **transaction managers**, and **security roles**.
+
+# WebSphere Archive Hierarchy
+
+![image info](./images/WAS_Archive_Hierarchy.png)
+
+## EAR  (target = WAS App Classloader)
+
+Top-level enterprise archive encapsulation. It bundles **web modules** (WARs), **Enterprise Java Beans** (EJB JARs), and **shared libraries** with an `application.xml` deployment descriptor for the WAS.
+
+## WAR (target = Web Container)
+
+Encapsulates the **web application components** (Servlets, JSPs, HTML, JS, CSS) and web-specific libraries. WAS routes incoming HTTP/HTTPS requests directly to the Web Container executing this module.
+
+## EJB JAR (target = EJB Container Engine)
+
+Contains transactional business logic components (stateless/stateful Session Beans and Message-Driven Beans). The WAS EJB Container provides *declarative* security, transaction management and remoting(¿?). 
+
+Core transactional enterprise services and JMS asynchronous message consumers. Executes within WAS EJB container runtime with managed lifecycle and connection pooling. Executes within WebSphere's EJB container runtime with managed lifecycle and connection pooling.
+
+## Lib JARs (target = Application Classloader)
+
+Utility libraries residing in the `EAR(root)` or `EAR/lib` directory. Made accessible to all WAR and EJB modules within the enterprise application, avoiding duplicate dependency loading. Common domain objects, DTOs, DAOs, enums, and utility classes used jointly by Web and EJB tiers across the deployment hierarchy.
