@@ -159,3 +159,54 @@ If these versions don't match, WebSphere will throw runtime deserialization or `
 2. Set iReport / Jaspersoft Studio compatibility or source version in the settings: `Tools > Options > iReport > General > Compatibility` to match that version.
 
 <u>Question</u>: how must we configure our DB connections to Informix and DB2?
+
+# Configuring DB Connections
+
+iReport establishes its own direct JDBC connection to preview reports, it requires this information to be entered explicitly into its own datasource configuration.
+
+1. `host`
+2. `port`
+3. `DB name` 
+4. `username`
+5. `password`
+
+### Extract the Connection Info from Aqua Data Studio
+
+1. Right-click the DB2 connection in Aqua Data Studio's `Servers` tree -> `Properties`.
+
+### Retrieve or Reset the Password
+
+- **ADS Connection Files**: Aqua Data Studio stores connection definitions in configuration files (typically under `%USERPROFILE%\.datastudio\connections` on Windows). Inside these XML files, passwords are generally encrypted or obfuscated. 
+
+- **Recommended approach**: request the DB2 application password from your DBA/lead, or ask for a personal read-only database account for development and report testing. 
+
+- **Check Local Config Files**.
+
+# Setting up JDBC Connections in iReport
+
+To run queries inside iReport, you must register the DB drivers and create a Data Source.
+
+## Step 1: Add JDBC Drivers to iReport Classpath:
+
+Before creating a connection, iReports needs the `*.jar` driver diles:
+
+- In iReport, go to **Tools** > **Options** > **iReport** tab > **Classpath** sub-tab.
+- Click "**Add JAR**" and select your JDBC driver files:
+    - `db2jcc4.jar` or `db2jcc.jar`
+    - `ifxjdbc.jar`
+- Click "**Apply**" and "**OK**".
+
+## Step 2: Create the DB Connection
+
+- Click the **Report Datasources** icon in the main toolbar (or go to **Data** > **Report** > **Datasources**)
+- Click **New**.
+- Select **Database JDBC connection** and click **Next**.
+- Configure parameters.
+
+### DB2 JDBC
+
+`jdbc:db2://<HOST>:<PORT>/<DATABASE>`
+
+### Informix JDBC
+
+`jdbc:informix-sqli://<HOST>:<PORT>/<DATABASE_NAME>:INFORMIXSERVER=<SERVER_NAME>`
