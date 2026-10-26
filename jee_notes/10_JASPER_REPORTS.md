@@ -86,6 +86,32 @@ JasperReports uses a two-stage template pipeline:
 </jasperReport>
 ```
 
+## Finding iReport and JARs in Windows:
+
+```cmd
+dir C:\*iReport* /s /b /a 2>nul
+REM /s -> Subdirectories
+REM /b -> Show the full path
+REM /a -> Show hidden folders and files
+```
+
+## Validating JARs
+
+1. Inspect the **Application JAR**:
+```bash
+ls AppA.war/WEB-INF/lib/jasperreports-*.jar
+# Example: jasperreports-5.6.0-jar
+```
+
+2. Check **iReport**'s **Installed Version**:
+
+In iReport, go to **Help > About** or inspect `<iReport-dir>/ireport/modules/ext` to check which version does iReport use **natively**.
+
+## Set Compatibility Mode in iReport
+
+1. **Tools** > **Options** > **iReport** > **General tab** > **Compatibility**.
+2. Change **Save Report as...** from *Current Version* to the exact version matching your application's jar.
+
 ## Tooling
 
 - JasperSoft Studio (Eclipse-based GUI)
@@ -210,3 +236,10 @@ Before creating a connection, iReports needs the `*.jar` driver diles:
 ### Informix JDBC
 
 `jdbc:informix-sqli://<HOST>:<PORT>/<DATABASE_NAME>:INFORMIXSERVER=<SERVER_NAME>`
+
+# Preview Reports with the Datasource
+
+1. Open you `*.jrxml` file in iReport.
+2. In the top toolbar drop-down menu, select the **active datasource** (e.g. `Informix_Transactions`).
+3. Click **Preview** (or press Ctrl + R).
+4. If your report contains parameters like `$P{ACCOUNT_ID}`, iReport will prompt you to enter test values before rending the output.
