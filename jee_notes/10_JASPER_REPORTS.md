@@ -92,7 +92,7 @@ JasperReports uses a two-stage template pipeline:
 dir C:\*iReport* /s /b /a 2>nul
 REM /s -> Subdirectories
 REM /b -> Show the full path
-REM /a -> Show hidden folders and files
+REM /a -> Show hidden folders and filesx
 ```
 
 ## Validating JARs
@@ -167,11 +167,11 @@ in the Java code.
 
 Thus, you must go with **iReport** (legacy version of Jaspersoft Studio). iReport Designer was officially retired by Jaspersoft at version 5.6.0 back in 2014.
 
-## iReport requires Java 7 or 8
+## iReport requires Java 7 (iReport GUI)
 
-iReport desktop UI is built on the old NetBeans RCP framework and will fail to open or immediately crash if executed with JDK 11, 17 or newer. Fix = Edit `<iReport-Install-Dir>/etc/ireport.conf` and explicitly point `jdkhome` to a local Java 8 installation:
+iReport desktop UI is built on the old NetBeans RCP framework and will fail to open or immediately crash if executed with JDK 11, 17 or newer. Fix = Edit `<iReport-Install-Dir>/etc/ireport.conf` and explicitly point `jdkhome` to a local Java 7 installation:
 ```properties
-jdkhome="/path/to/jdk1.8.0_361"
+jdkhome="/path/to/jdk1.7.0_80"w
 ```
 
 ## Match the Compiled Version to your Application JAR

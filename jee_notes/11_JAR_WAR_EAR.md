@@ -41,26 +41,63 @@ When you are compiling a **common utility library** (like custom date formatters
 When you are deploying a **standalone web application** or a **RESTful microservice** (like a Spring Boot application packaged for external deployment). If the application **does not require EJBs** or multiple **distinct modules** communicating internally, deploying a **standalone WAR** is perfectly fine and often preferred for modern, decentralized architectures.
 
 ### Use an EAR
-When you have a **complex enterprise system** (such as a large banking application) that consists of **multiple frontends** (**multiple WARs**) sharing a **common backend business logic** tier (EJBs JARs). Packaging them in an EAR allows WAS to deploy them as a single unit, ensuring they share the **same classloader context**, **transaction managers**, and **security roles**.
+When you have a **complex enterprise system** (such as a **large banking application**) that consists of **multiple frontends** (**multiple WARs**) sharing a **common backend business logic** tier (EJBs JARs). Packaging them in an EAR allows WAS to deploy them as a single unit, ensuring they share the **same classloader context**, **transaction managers**, and **security roles**.
 
 # WebSphere Archive Hierarchy
 
 ![image info](./images/WAS_Archive_Hierarchy.png)
 
-## EAR  (target = WAS App Classloader)
+## EAR  (target: WAS App Classloader)
 
 Top-level enterprise archive encapsulation. It bundles **web modules** (WARs), **Enterprise Java Beans** (EJB JARs), and **shared libraries** with an `application.xml` deployment descriptor for the WAS.
 
-## WAR (target = Web Container)
+## WAR (target: Web Container)
 
 Encapsulates the **web application components** (Servlets, JSPs, HTML, JS, CSS) and web-specific libraries. WAS routes incoming HTTP/HTTPS requests directly to the Web Container executing this module.
 
-## EJB JAR (target = EJB Container Engine)
+## EJB JARs (target: EJB Container Engine)
 
-Contains transactional business logic components (stateless/stateful Session Beans and Message-Driven Beans). The WAS EJB Container provides *declarative* security, transaction management and remoting(¿?). 
+Contains **transactional business logic components** (stateless/stateful Session Beans and Message-Driven Beans). The WAS EJB Container provides *declarative* security, transaction management and remoting(¿?). 
 
 Core transactional enterprise services and JMS asynchronous message consumers. Executes within WAS EJB container runtime with managed lifecycle and connection pooling. Executes within WebSphere's EJB container runtime with managed lifecycle and connection pooling.
 
 ## Lib JARs (target = Application Classloader)
 
 Utility libraries residing in the `EAR(root)` or `EAR/lib` directory. Made accessible to all WAR and EJB modules within the enterprise application, avoiding duplicate dependency loading. Common domain objects, DTOs, DAOs, enums, and utility classes used jointly by Web and EJB tiers across the deployment hierarchy.
+
+# Arquitectura Java EE Tradicional
+
+Los proyectos de tipo **service** (backend) y **app** (frontend/orquestador) se empaquetan en archivos **EAR** para servidores de aplicaciones completos como el **WAS**, o en archivos WAR para contenedores web más ligeros como el Tomcat.
+
+Los cientos de archivos *.jar generados por un `mvn clean install` en la raíz de un proyecto complejo (como la persistencia, utilerías, DTOs, enums, librerías de terceros) no se despliegan sueltos; Maven ya los incluyó dentro de las carpetas:
+
+`WEB-INF/lib` de los respectivos WAR, y éstos a su vez dentro de los EAR.
+
+## WAS vs Tomcat/Jetty
+
+1. **Apache Tomcat** **no soporta archivos EAR** de forma **nativa**. Tomcat y Jetty se quedan "cortos" en la categoría de **servlet containers = contenedores web**, no servidores de aplicaciones Java/Jakarta EE completos. Por tanto, para pruebas locales se deben ignorar los *.ear y solamente se deberán desplegar los *.war.
+
+2. **WAS** provee una fábrica de implementaciones empresariales pesadas (JMS/MQ para colas de mensajes, EJBs o implementaciones específicas de JPA). Si el código utiliza dependencias de este tipo asumiendo que el servidor las proveerá, Tomcat lanzará errores de `ClassNotFoundException`.  
+Fix: Agregar estas librerías de forma manual al directorio `lib/` de tu Tomcat local.
+
+3. **Recursos JNDI**: las conexiones a bases de datos (DataSources) en WAS se configuran a nivel de consola y se exponen por JNDI (e.g. `jdbc/Application_DS`). En Tomcat se tendrá que replicar esta configuración creando un archivo `context.xml` en tu entorno local (o dentro del directorio `META-INF/` del proyecto) para que la persistencia logre conectarse a la(s) BD(s) del proyecto.
+
+# Dos Escenarios de Despliegue
+
+## 1. Escenario Híbrido:
+
+Levantar la interfaz gráfica (JavaFX) desde Eclipse Oxygen en la computadora local, y esta interfaz se comunicaba por red con el backend (`ApplicationService.war`) ya desplegado en el WAS de un servidor de desarrollo RHEL/WAS.
+
+En Eclipse Oxygen, crear un **"Run Configuration" (Java Application)** apuntando a la clase `Main` del proyecto de JavaFX.
+
+La aplicación JavaFX usa librerías como `resteasy-client` o `httpClient` para hacer peticiones HTTP/REST a una URL configurada.
+
+Así, el desarrollador no tiene que lidiar con levantar servidores pesados, configurar DataSources locales ni instalar un WebSphere en su Windows. Solamente compilar la vista, ejecutar al instante y **consumir los datos del servidor de desarrollo**.
+
+## 2. 100% Local con Eclipse (menos probable, pero posible)
+
+Si se requiere hacer cambios tanto en las pantallas como en las consultas a la BD, entonces se necesita levantar todo en el entorno local.
+
+Eclipse Oxygen incluye la perspectiva (view) "Java EE" y la pestaña "Servers" (**Web Tools Platform - WTP**). Desde ahí, podemos agregar un servidor local, por ejemplo, un **WAS Liberty Profile (WLP)** (la versión ligera del WAS) o simplemente un **Tomcat configurado a mano**.
+
+Dat click derecho al proyecto backend -> Run as -> Run on Server. Una vez que el backend responda en `localhost:8080`, apuntar la aplicación JavaFX a ese `localhost`.
