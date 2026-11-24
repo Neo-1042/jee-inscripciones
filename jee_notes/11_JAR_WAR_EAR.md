@@ -88,7 +88,7 @@ Fix: Agregar estas librerías de forma manual al directorio `lib/` de tu Tomcat 
 
 Levantar la interfaz gráfica (JavaFX) desde Eclipse Oxygen en la computadora local, y esta interfaz se comunicaba por red con el backend (`ApplicationService.war`) ya desplegado en el WAS de un servidor de desarrollo RHEL/WAS.
 
-En Eclipse Oxygen, crear un **"Run Configuration" (Java Application)** apuntando a la clase `Main` del proyecto de JavaFX.
+En **Eclipse Oxygen**, crear un **"Run Configuration" (Java Application)** apuntando a la clase `Main` del proyecto de JavaFX.
 
 La aplicación JavaFX usa librerías como `resteasy-client` o `httpClient` para hacer peticiones HTTP/REST a una URL configurada.
 
@@ -98,6 +98,16 @@ Así, el desarrollador no tiene que lidiar con levantar servidores pesados, conf
 
 Si se requiere hacer cambios tanto en las pantallas como en las consultas a la BD, entonces se necesita levantar todo en el entorno local.
 
-Eclipse Oxygen incluye la perspectiva (view) "Java EE" y la pestaña "Servers" (**Web Tools Platform - WTP**). Desde ahí, podemos agregar un servidor local, por ejemplo, un **WAS Liberty Profile (WLP)** (la versión ligera del WAS) o simplemente un **Tomcat configurado a mano**.
+**Eclipse Oxygen** incluye la perspectiva (view) "Java EE" y la pestaña "Servers" (**Web Tools Platform - WTP**). Desde ahí, podemos agregar un servidor local, por ejemplo, un **WAS Liberty Profile (WLP)** (la versión ligera del WAS) o simplemente un **Tomcat configurado a mano**.
 
-Dat click derecho al proyecto backend -> Run as -> Run on Server. Una vez que el backend responda en `localhost:8080`, apuntar la aplicación JavaFX a ese `localhost`.
+Dat click derecho al proyecto backend -> **Run as** -> **Run on Server**. Una vez que el backend responda en `localhost:8080`, apuntar la aplicación JavaFX a ese `localhost`.
+
+# Descubrir Forma de Trabajo Anterior
+
+Buscar estas pistas en el código fuente o en el workspace.
+
+1. Buscar archivos `*.properties` o `*.xml` de configuración dentro de `ProyectoFX/src/main/resources` información donde se definan URL del servidor (`server.url=http://[RHEL-DEV-SERVER]:9080/ProyectoService`). Si dice `localhost`, entonces se levanta el backened en el entorno local.
+
+2. Revisar los **"Run Configurations"** de Eclipse: buscar en la raíz de los proyectos archivos con extensión `*.launch`. Estos archivos guardan la información de cómo se levanta el proyecto. Al encontrar uno que ejecuta una clase Java (`org.eclipse.jdt.launching.localJavaApplication`), ahí pueden estar qué argumentos se pasan para arrancar el frontend.
+
+3. Buscar rastros de servidores en el Workspace: buscar archivos como: `.metadata/.plugins/org.eclipse.wst.server.core`. Si encontramos archivos como `servers.xml`, entonces se tenía un servidor local como un Tomcat o un WAS Liberty. En los arhivos `.classpath` también se puede hallar este tipo de información.
